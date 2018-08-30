@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>note</title>
+    <meta charset="UTF-8">
+    <meta name="content-type" content="text/html">
+    <link rel="icon" type="image/x-icon" href="/anyone/favicon.ico">
+</head>
+
+<body bgcolor="#F0FFF0">
+
+<div>
+    <textarea id="text" readonly="readonly" rows="45" cols="138"></textarea>
+</div>
+<p>
+    <button id="act" type="button" onclick="edit()" style="font-size:50px">edit</button>
+    <button id="cancel" type="button" onclick="cancel()" style="font-size: 50px;display: none;">cancel</button>
+</p>
+
+</body>
+<script type="text/javascript">
+    function createXmlHttpRequest() {
+        if (window.ActiveXObject) {
+            return new ActiveXObject("Microsoft.XMLHTTP");
+        } else if (window.XMLHttpRequest) {
+            return new XMLHttpRequest();
+        }
+    }
+
+    text = document.getElementById('text')
+
+    function display(response) {
+        text.value = response
+    }
+
+    bt_act = document.getElementById('act')
+    bt_cancel = document.getElementById('cancel')
+
+    function refresh() {
+        var xhr = createXmlHttpRequest()
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                display(xhr.responseText)
+            } else if (xhr.readyState == 4) {
+                alert("bad request")
+            }
+        }
+        xhr.open("GET", "note/shane", true)
+        xhr.send()
+    }
+
+    function request() {
+        if (text.value.length == 0) {
+            alert("cannot be empty.")
+            return
+        }
+        var xhr = createXmlHttpRequest()
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                alert(xhr.responseText)
+            } else if (xhr.readyState == 4) {
+                alert("bad request")
+            }
+        }
+        xhr.open("POST", "note/shane", true)
+        xhr.send(text.value)
+    }
+
+    function update() {
+        text.setAttribute("readonly", "readonly")
+        bt_act.innerText = 'edit'
+        bt_act.setAttribute("onclick", "edit()")
+        bt_cancel.style.display = "none"
+        request()
+    }
+
+    function cancel() {
+        text.setAttribute("readonly", "readonly")
+        bt_act.innerText = 'edit'
+        bt_act.setAttribute("onclick", "edit()")
+        bt_cancel.style.display = "none"
+        refresh()
+    }
+
+    function edit() {
+        text.removeAttribute("readonly")
+        bt_act.innerText = 'update'
+        bt_act.setAttribute("onclick", "update()")
+        bt_cancel.style.display = ""
+        text.focus()
+    }
+
+    refresh()
+</script>
+
+</html>

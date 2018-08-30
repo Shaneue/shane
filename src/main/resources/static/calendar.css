@@ -1,0 +1,184 @@
+body {
+  background: #f2f2f2;
+  margin: 40px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.parent {
+  white-space: nowrap;
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+.calendar {
+  width: 450px;
+  height: 350px;
+  background: #fff;
+  box-shadow: 0px 1px 1px rgba(119, 59, 59, 0.1);
+  display: inline-block;
+}
+
+.diary {
+  position: relative;
+  white-space: normal;
+  width: 600px;
+  height: 350px;
+  background: #ffffff;
+  box-shadow: 0px 1px 1px rgba(119, 59, 59, 0.1);
+  vertical-align: top;
+  display: inline-block;
+}
+
+.title {
+  height: 70px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+}
+
+#calendar-month {
+  font-size: 25px;
+  font-family: arial;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 14px 0 0 0;
+}
+
+#calendar-year {
+  font-size: 15px;
+  font-family: arial;
+  font-weight: normal;
+}
+
+#prev {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 60px;
+  height: 70px;
+  background: url(prev.png) no-repeat 50% 50%;
+}
+
+#next {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 60px;
+  height: 70px;
+  background: url(next.png) no-repeat 50% 50%;
+}
+
+.body {
+  padding: 10px 20px;
+}
+
+.body-list ul li {
+  font-family: arial;
+  font-weight: bold;
+  font-size: 24px;
+  width: 14.28%;
+  height: 36px;
+  line-height: 36px;
+  list-style-type: none;
+  display: block;
+  box-sizing: border-box;
+  float: left;
+  text-align: center;
+}
+
+.lightgrey {
+  color: #a8a8a8;
+}
+
+.darkgrey {
+  color: #565656;
+}
+
+.green {
+  color: #6ac13c;
+}
+
+.greenbox {
+  border: 1px solid #6ac13c;
+  background: #e9f8df;
+}
+
+.blue {
+  color: #2624b3;
+}
+
+.bluebox {
+  border: 1px solid #2624b3;
+  background: #abafeb;
+}
+
+.yellow {
+  color: #eefc29;
+}
+
+.yellowbox {
+  border: 1px solid #b2bb3a;
+  background: #0d1744;
+}
+
+.red {
+  color: #d13f3f;
+}
+
+.redbox {
+  border: 1px solid #bb3a3a;
+  background: #d19b9b;
+}
+
+.button {
+  color: rgba(255, 255, 255, 1);
+  background-color: rgb(107, 221, 168);
+  font-family: Arial;
+  font-size: 20px;
+  display: inline-block;
+  width: 130px;
+  height: 38px;
+  text-align: center;
+  border-radius: 12px;
+  margin-right: 10px;
+}
+
+.button:active {
+  top: 6px;
+}
+
+.items_box {
+  height: 120px;
+  overflow: auto;
+  width: 590px;
+}
+
+.item {
+  margin-left: 30px;
+}
+
+.diary_date {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.notes_box {
+  text-align: center;
+}
+
+.button_box {
+  position: absolute;
+  left: 100px;
+  bottom: 10px;
+}
+
+.notes {
+  height: 90px;
+  width: 590px;
+  resize: none;
+  margin-top: 20px;
+}

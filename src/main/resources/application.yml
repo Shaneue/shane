@@ -1,0 +1,39 @@
+owner:
+  name: shane
+
+file:
+  passwords: encrypted
+  diary: diary
+
+server:
+  port: 443
+  ssl:
+    key-store: classpath:tomcat.keystore
+    key-store-password: tomcat
+    keyStoreType: pkcs12
+    keyAlias: tomcat
+  tomcat:
+    accesslog:
+      buffered: false
+      enabled: true
+      pattern: common
+      directory: log
+    basedir: ./tomcat
+
+spring:
+  thymeleaf:
+    cache: false
+    mode: HTML
+  security:
+    user:
+      name: hxh
+      password: shanehh
+
+logging:
+  file:
+    max-history: 10
+    max-size: 20mb
+  file: ./log/own_use.log
+
+security:
+  csrf: false
