@@ -2,18 +2,18 @@ package cn.hxh.object;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Note {
+public class Memo {
     @JsonProperty
     String topic;
 
     @JsonProperty
     String content;
 
-    public Note() {
+    public Memo() {
 
     }
 
-    public Note(String topic, String content) {
+    public Memo(String topic, String content) {
         this.topic = topic;
         this.content = content;
     }

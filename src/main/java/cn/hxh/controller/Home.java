@@ -10,8 +10,8 @@ public class Home {
         return html();
     }
 
-    private String[] hrefs = new String[]{"diary", "main", "resources", "swagger", "anyone/owner.jpg", "note", "anyone/owner.pdf"};
-    private String[] texts = new String[]{"diary page", "request page", "resources", "swagger page", "password services", "note", "owner"};
+    private String[] hrefs = new String[]{"diary", "main", "resources", "swagger", "anyone/owner.jpg", "memo", "anyone/owner.pdf"};
+    private String[] texts = new String[]{"diary page", "request page", "resources", "swagger page", "password services", "memo", "owner"};
 
     private String html() {
         String top = "<!DOCTYPE html><html><head><title>home</title><link rel=\"icon\" type=\"image/x-icon\" href=\"/anyone/favicon.ico\"><meta charset=\"UTF-8\"><meta name=\"content-type\" content=\"text/html\"></head>";

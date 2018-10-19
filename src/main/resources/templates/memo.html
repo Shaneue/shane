@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>note</title>
+    <title>memo</title>
     <meta charset="UTF-8">
     <meta name="content-type" content="text/html">
     <link rel="icon" type="image/x-icon" href="/anyone/favicon.ico">
@@ -34,7 +34,7 @@
                 alert("Bad Request")
             }
         }
-        xhr.open("GET", "note/list", true)
+        xhr.open("GET", "memo/list", true)
         xhr.send()
     }
 
@@ -66,7 +66,7 @@
                 alert("Bad Request")
             }
         }
-        xhr.open("POST", "note/" + p, true)
+        xhr.open("POST", "memo/" + p, true)
         xhr.send()
     }
 
@@ -86,7 +86,7 @@
                 alert("Bad Request")
             }
         }
-        xhr.open("DELETE", "note/" + present_topic, true)
+        xhr.open("DELETE", "memo/" + present_topic, true)
         xhr.send()
     }
 
@@ -114,7 +114,7 @@
                 alert("Bad Request")
             }
         }
-        xhr.open("GET", "note/" + topic_json[present_topic], true)
+        xhr.open("GET", "memo/" + topic_json[present_topic], true)
         xhr.send()
     }
 
@@ -135,7 +135,7 @@
                 alert("bad request")
             }
         }
-        xhr.open("POST", "note/" + topic_json[present_topic] + "/" + present_topic, true)
+        xhr.open("POST", "memo/" + topic_json[present_topic] + "/" + present_topic, true)
         xhr.send(text.value)
     }
 

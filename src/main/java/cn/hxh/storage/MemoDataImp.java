@@ -1,10 +1,8 @@
 package cn.hxh.storage;
 
-import cn.hxh.object.Diary;
-import cn.hxh.object.Note;
-import cn.hxh.storage.interfaces.NoteData;
+import cn.hxh.object.Memo;
+import cn.hxh.storage.interfaces.MemoData;
 import cn.hxh.util.HH;
-import cn.hxh.util.file.FileUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,28 +15,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class NodeDataImp implements NoteData {
+public class MemoDataImp implements MemoData {
     private static final Object lock = new Object();
-    private static final Logger log = LoggerFactory.getLogger(NodeDataImp.class);
-    private static final String DIR_NAME = "notes";
+    private static final Logger log = LoggerFactory.getLogger(MemoDataImp.class);
+    private static final String DIR_NAME = "memos";
 
     private ObjectMapper mapper = new ObjectMapper();
-    private Map<String, String> notes = new HashMap<>();
+    private Map<String, String> memos = new HashMap<>();
 
     @PostConstruct
     public void init() {
         synchronized (lock) {
             File dir = new File(HH.resourceFilePath(DIR_NAME));
-            File[] noteText = dir.listFiles();
-            if (noteText == null || noteText.length == 0) {
-                log.info("No notes.");
+            File[] memoText = dir.listFiles();
+            if (memoText == null || memoText.length == 0) {
+                log.info("No memos.");
                 return;
             }
-            for (File f : noteText) {
+            for (File f : memoText) {
                 try {
-                    notes.put(getTopicOfNote(f), f.getName());
+                    memos.put(getTopicOfMemo(f), f.getName());
                 } catch (IOException e) {
-                    log.warn("Fail to get note.", e);
+                    log.warn("Fail to get memo.", e);
                 }
             }
         }
@@ -48,10 +46,10 @@ public class NodeDataImp implements NoteData {
     public String query(String id) {
         synchronized (lock) {
             try {
-                Note note = mapper.readValue(new File(notePath(id)), Note.class);
-                return note.getContent();
+                Memo memo = mapper.readValue(new File(memoPath(id)), Memo.class);
+                return memo.getContent();
             } catch (IOException e) {
-                log.warn("Fail to query note.", e);
+                log.warn("Fail to query memo.", e);
                 return "";
             }
         }
@@ -60,14 +58,14 @@ public class NodeDataImp implements NoteData {
     @Override
     public boolean create(String topic) {
         synchronized (lock) {
-            if (notes.containsKey(topic)) return false;
+            if (memos.containsKey(topic)) return false;
             try {
                 String fileName = Long.toString(System.currentTimeMillis());
                 mapper.writerWithDefaultPrettyPrinter()
-                        .writeValue(new File(notePath(fileName)), new Note(topic, ""));
-                notes.put(topic, fileName);
+                        .writeValue(new File(memoPath(fileName)), new Memo(topic, ""));
+                memos.put(topic, fileName);
             } catch (IOException e) {
-                log.warn("Fail to update note.", e);
+                log.warn("Fail to update memo.", e);
                 return false;
             }
             return true;
@@ -77,10 +75,10 @@ public class NodeDataImp implements NoteData {
     @Override
     public boolean delete(String topic) {
         synchronized (lock) {
-            if (!notes.containsKey(topic)) return false;
-            String path = notePath(notes.get(topic));
+            if (!memos.containsKey(topic)) return false;
+            String path = memoPath(memos.get(topic));
             if (!new File(path).delete()) return false;
-            notes.remove(topic);
+            memos.remove(topic);
             return true;
         }
     }
@@ -88,12 +86,12 @@ public class NodeDataImp implements NoteData {
     @Override
     public boolean update(String fileName, String topic, String content) {
         synchronized (lock) {
-            if (!notes.containsKey(topic)) return false;
+            if (!memos.containsKey(topic)) return false;
             try {
                 mapper.writerWithDefaultPrettyPrinter()
-                        .writeValue(new File(notePath(fileName)), new Note(topic, content));
+                        .writeValue(new File(memoPath(fileName)), new Memo(topic, content));
             } catch (IOException e) {
-                log.warn("Fail to update note.", e);
+                log.warn("Fail to update memo.", e);
                 return false;
             }
             return true;
@@ -102,18 +100,18 @@ public class NodeDataImp implements NoteData {
 
 
     @Override
-    public Map<String, String> queryNotes() {
+    public Map<String, String> queryMemos() {
         synchronized (lock) {
-            return notes;
+            return memos;
         }
     }
 
-    private String getTopicOfNote(File noteFile) throws IOException {
-        Note note = mapper.readValue(noteFile, Note.class);
-        return note.getTopic();
+    private String getTopicOfMemo(File memoFile) throws IOException {
+        Memo memo = mapper.readValue(memoFile, Memo.class);
+        return memo.getTopic();
     }
 
-    private String notePath(String noteFileName) {
-        return HH.resourceFilePath(DIR_NAME) + '/' + noteFileName;
+    private String memoPath(String memoFileName) {
+        return HH.resourceFilePath(DIR_NAME) + '/' + memoFileName;
     }
 }

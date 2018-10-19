@@ -2,10 +2,10 @@ package cn.hxh.storage.interfaces;
 
 import java.util.Map;
 
-public interface NoteData {
+public interface MemoData {
     String query(String note);
 
-    Map<String, String> queryNotes();
+    Map<String, String> queryMemos();
 
     boolean create(String topic);
 
