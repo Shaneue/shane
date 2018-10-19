@@ -50,7 +50,10 @@
 
     function createTopic() {
         p = prompt("Topic", "hello, world.")
-        if (p == null || p == "") {
+        if (p == null) {
+            return
+        }
+        if (p == "") {
             alert('Not Empty Please');
             return
         }
