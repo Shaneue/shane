@@ -16,7 +16,7 @@ public class JarIOUtil {
     public static void copyToShane(String filePath) throws Exception {
         File file = new File(HH.resourceDir() + filePath);
         if (file.exists()) {
-            log.info("Already exists and does not be copied: " + filePath);
+            log.info("Already exists and is not copied: " + filePath);
             return;
         }
         Resource resource = new ClassPathResource(filePath);

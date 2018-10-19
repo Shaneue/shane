@@ -1,7 +1,15 @@
 package cn.hxh.storage.interfaces;
 
-public interface NoteData {
-    String query();
+import java.util.Map;
 
-    void update(String note);
+public interface NoteData {
+    String query(String note);
+
+    Map<String, String> queryNotes();
+
+    boolean create(String topic);
+
+    boolean delete(String topic);
+
+    boolean update(String fileName, String topic, String content);
 }

@@ -33,7 +33,7 @@ logging:
   file:
     max-history: 10
     max-size: 20mb
-  file: ./log/own_use.log
+  file: ./log/shane.log
 
 security:
   csrf: false

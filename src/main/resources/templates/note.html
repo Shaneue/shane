@@ -9,17 +9,84 @@
 </head>
 
 <body bgcolor="#F0FFF0">
-
 <div>
-    <textarea id="text" readonly="readonly" rows="45" cols="138"></textarea>
+    <div id="topic_list" style="display: inline-block; vertical-align: top; margin-right: 50px">
+    </div>
+    <div style="display:inline-block">
+        <textarea id="text" readonly="readonly" rows="45" cols="88"></textarea>
+        <p>
+            <button id="act" type="button" onclick="edit()" style="font-size:50px">edit</button>
+            <button id="cancel" type="button" onclick="cancel()" style="font-size: 50px;display: none;">cancel</button>
+        </p>
+    </div>
 </div>
-<p>
-    <button id="act" type="button" onclick="edit()" style="font-size:50px">edit</button>
-    <button id="cancel" type="button" onclick="cancel()" style="font-size: 50px;display: none;">cancel</button>
-</p>
-
 </body>
 <script type="text/javascript">
+    var present_topic
+    var topic_json
+
+    function init() {
+        var xhr = createXmlHttpRequest()
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                handleInit(xhr.responseText)
+            } else if (xhr.readyState == 4) {
+                alert("Bad Request")
+            }
+        }
+        xhr.open("GET", "note/list", true)
+        xhr.send()
+    }
+
+    function handleInit(response) {
+        topic_json = JSON.parse(response)
+        a = '<h1>Topic List</h1><ul>'
+        for (var topic in topic_json) {
+            a += '<li><button onclick=requestTopic(this)>' + topic + '</button></li>'
+        }
+        a += '</ul><button onclick=createTopic()>create</button><button onclick=deleteTopic()>delete</button>'
+        document.getElementById('topic_list').innerHTML = a
+    }
+
+    function createTopic() {
+        p = prompt("Topic", "hello, world.")
+        if (p == null || p == "") {
+            alert('Not Empty Please');
+            return
+        }
+        var xhr = createXmlHttpRequest()
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                alert(xhr.responseText)
+                init()
+            } else if (xhr.readyState == 4) {
+                alert("Bad Request")
+            }
+        }
+        xhr.open("POST", "note/" + p, true)
+        xhr.send()
+    }
+
+    function deleteTopic() {
+        if (present_topic == undefined) {
+            alert("Pick a topic first.");
+            return
+        }
+        c = confirm("Going to delete topic: " + present_topic)
+        if (c == false) return
+        var xhr = createXmlHttpRequest()
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                alert(xhr.responseText)
+                init()
+            } else if (xhr.readyState == 4) {
+                alert("Bad Request")
+            }
+        }
+        xhr.open("DELETE", "note/" + present_topic, true)
+        xhr.send()
+    }
+
     function createXmlHttpRequest() {
         if (window.ActiveXObject) {
             return new ActiveXObject("Microsoft.XMLHTTP");
@@ -34,21 +101,23 @@
         text.value = response
     }
 
-    bt_act = document.getElementById('act')
-    bt_cancel = document.getElementById('cancel')
-
-    function refresh() {
+    function requestTopic(topic) {
+        present_topic = topic.innerText
         var xhr = createXmlHttpRequest()
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 display(xhr.responseText)
             } else if (xhr.readyState == 4) {
-                alert("bad request")
+                alert("Bad Request")
             }
         }
-        xhr.open("GET", "note/shane", true)
+        xhr.open("GET", "note/" + topic_json[present_topic], true)
         xhr.send()
     }
+
+    bt_act = document.getElementById('act')
+    bt_cancel = document.getElementById('cancel')
+
 
     function request() {
         if (text.value.length == 0) {
@@ -63,7 +132,7 @@
                 alert("bad request")
             }
         }
-        xhr.open("POST", "note/shane", true)
+        xhr.open("POST", "note/" + topic_json[present_topic] + "/" + present_topic, true)
         xhr.send(text.value)
     }
 
@@ -91,7 +160,7 @@
         text.focus()
     }
 
-    refresh()
+    init()
 </script>
 
 </html>
