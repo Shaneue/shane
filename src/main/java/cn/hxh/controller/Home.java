@@ -10,7 +10,7 @@ public class Home {
         return html();
     }
 
-    private String[] hrefs = new String[]{"diary", "main", "resources", "swagger", "anyone/owner.jpg", "memo", "anyone/owner.pdf"};
+    private String[] hrefs = new String[]{"diary", "main", "resources", "swagger", "anyone/workingonit.jpg", "memo", "anyone/bear.jpg"};
     private String[] texts = new String[]{"diary page", "request page", "resources", "swagger page", "password services", "memo", "owner"};
 
     private String html() {
