@@ -2,7 +2,6 @@ package cn.hxh.storage;
 
 import cn.hxh.common.Constants;
 import cn.hxh.object.Diary;
-import cn.hxh.object.Diary.Key;
 import cn.hxh.storage.interfaces.DiaryData;
 import cn.hxh.util.HH;
 import com.fasterxml.jackson.databind.ObjectMapper;
