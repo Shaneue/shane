@@ -10,7 +10,7 @@ public class Home {
         return html();
     }
 
-    private String[] hrefs = new String[]{"diary", "main", "resources", "swagger", "anyone/workingonit.jpg", "memo", "anyone/bear.jpg"};
+    private String[] hrefs = new String[]{"diary", "main", "resources", "swagger", "anyone/workingonit.jpg", "memo", "https://b.shaneu.cn"};
     private String[] texts = new String[]{"diary page", "request page", "resources", "swagger page", "password services", "memo", "owner"};
 
     private String html() {
@@ -29,6 +29,6 @@ public class Home {
     }
 
     private String href(String path, String text) {
-        return "<li><a href=\"/" + path + "\">" + text + "</a></li>";
+        return "<li><a href=\"" + path + "\">" + text + "</a></li>";
     }
 }
