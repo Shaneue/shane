@@ -18,7 +18,7 @@ public class ZipUtilTest {
         ZipUtil.zip(toZipped, zip);
         String md5 = TestUtil.computeFileMd5(new File(zip));
         FileUtil.deleteFile(zip);
-        assertEquals("d6D8hnPnaH4Jioh/MFgqIQ==", md5);
+        assertEquals("bnJt/DvPTHZPJBf4WnVrcA==", md5);
     }
 
     @Test
