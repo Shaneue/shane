@@ -8,6 +8,7 @@ import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 public class JarIOUtil {
@@ -22,6 +23,10 @@ public class JarIOUtil {
         Resource resource = new ClassPathResource(filePath);
         InputStream is = resource.getInputStream();
         FileOutputStream fos = new FileOutputStream(file);
+
+    }
+
+    public static void writeOutputFromInput(FileOutputStream fos, InputStream is) throws IOException {
         byte[] bytes = new byte[1024];
         int length;
         while ((length = is.read(bytes)) > 0) {

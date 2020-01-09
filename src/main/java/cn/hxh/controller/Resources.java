@@ -16,12 +16,16 @@ import java.text.SimpleDateFormat;
 
 @RestController
 public class Resources {
+    private final MyLog myLog;
+
     @Autowired
-    MyLog myLog;
+    public Resources(MyLog myLog) {
+        this.myLog = myLog;
+    }
 
     @GetMapping("/resources")
     public ResponseEntity<FileSystemResource> zip() {
-        File zipFile = null;
+        File zipFile;
         try {
             File resourceDir = new File(HH.resourceDir());
             String zipTo = HH.temporaryDir() + "resources" +

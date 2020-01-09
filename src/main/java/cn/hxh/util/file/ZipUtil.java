@@ -1,6 +1,9 @@
 package cn.hxh.util.file;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -72,14 +75,8 @@ public class ZipUtil {
                 if (!fileZipped.getParentFile().exists()) {
                     fileZipped.getParentFile().mkdirs();
                 }
-                OutputStream out = new FileOutputStream(fileZipped);
-                byte[] buff = new byte[1024];
-                int len;
-                while ((len = in.read(buff)) > 0) {
-                    out.write(buff, 0, len);
-                }
-                in.close();
-                out.close();
+                FileOutputStream out = new FileOutputStream(fileZipped);
+                JarIOUtil.writeOutputFromInput(out, in);
                 System.out.println(pathOfUpZipped);
             }
         }

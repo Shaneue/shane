@@ -1,4 +1,4 @@
-package cn.hxh.configure;
+package cn.hxh.common.configure;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +12,7 @@ public class Security extends WebSecurityConfigurerAdapter {
     @Value("${security.csrf}")
     private boolean csrfEnabled;
 
-    String[] permit = new String[]{"/**"};
+    String[] permit = new String[]{};
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

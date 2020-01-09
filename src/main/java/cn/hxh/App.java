@@ -54,7 +54,9 @@ public class App {
         JarIOUtil.copyToShane(Constants.ENCRYPTED);
         File backup = new File(HH.resourceFilePath("backup") + File.separator);
         if (!backup.exists()) {
-            backup.mkdirs();
+            if (!backup.mkdirs()) {
+                System.out.println("Failed to mkdir");
+            }
         }
     }
 }

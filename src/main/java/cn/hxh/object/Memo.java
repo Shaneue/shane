@@ -1,7 +1,9 @@
 package cn.hxh.object;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
+@Getter
 public class Memo {
     @JsonProperty
     String topic;
@@ -18,12 +20,4 @@ public class Memo {
         this.content = content;
     }
 
-    public String getTopic() {
-        return topic;
-    }
-
-
-    public String getContent() {
-        return content;
-    }
 }

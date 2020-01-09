@@ -23,82 +23,65 @@ import java.util.UUID;
 public class PasswordDataImp implements PasswordData {
     private static Logger log = LoggerFactory.getLogger(PasswordDataImp.class);
 
-    private static final Object lock = new Object();
-
-
     @Override
     public boolean create(Password password, String code) {
-        synchronized (lock) {
+        synchronized (DiaryDataImp.lock) {
             Map<String, Password> passwordMap = getPasswords(code);
-            if (passwordMap == null || passwordMap.isEmpty()) return false;
+            if (passwordMap == null) return false;
             passwordMap.put(UUID.randomUUID().toString(), password);
-            moveToBackup(Constants.ENCRYPTED);
-            String content;
-            try {
-                content = Privacy
-                        .encrypt(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(passwordMap),
-                                code.getBytes());
-            } catch (Exception e) {
-                log.warn("Fail to encrypt new password");
-                return false;
-            }
-            FileUtil.writeOut(HH.resourceFilePath(Constants.ENCRYPTED), content);
+            if (savePassword(passwordMap, code)) return false;
         }
         return true;
     }
 
+    private boolean savePassword(Map<String, Password> passwordMap, String code) {
+        moveToBackup();
+        String content;
+        try {
+            content = Privacy
+                    .encrypt(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(passwordMap),
+                            code.getBytes());
+        } catch (Exception e) {
+            log.warn("Fail to encrypt new password");
+            return true;
+        }
+        FileUtil.writeOut(HH.resourceFilePath(Constants.ENCRYPTED), content);
+        return false;
+    }
+
     @Override
     public boolean delete(String id, String code) {
-        synchronized (lock) {
+        synchronized (DiaryDataImp.lock) {
             Map<String, Password> passwordMap = getPasswords(code);
+            if (passwordMap == null || passwordMap.isEmpty()) return false;
             if (!passwordMap.containsKey(id)) return false;
             passwordMap.remove(id);
-            moveToBackup(Constants.ENCRYPTED);
-            String content;
-            try {
-                content = Privacy
-                        .encrypt(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(passwordMap),
-                                code.getBytes());
-            } catch (Exception e) {
-                log.warn("Fail to encrypt new password");
-                return false;
-            }
-            FileUtil.writeOut(HH.resourceFilePath(Constants.ENCRYPTED), content);
+            if (savePassword(passwordMap, code)) return false;
         }
         return true;
     }
 
     @Override
     public boolean update(String id, Password password, String code) {
-        synchronized (lock) {
+        synchronized (DiaryDataImp.lock) {
             Map<String, Password> passwordMap = getPasswords(code);
-            if (!passwordMap.containsKey(id)) return false;
+            if (passwordMap == null || !passwordMap.containsKey(id)) return false;
             passwordMap.remove(id);
             passwordMap.put(UUID.randomUUID().toString(), password);
-            moveToBackup(Constants.ENCRYPTED);
-            String content;
-            try {
-                content = Privacy
-                        .encrypt(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(passwordMap),
-                                code.getBytes());
-            } catch (Exception e) {
-                log.warn("Fail to encrypt new password");
-                return false;
-            }
-            FileUtil.writeOut(HH.resourceFilePath(Constants.ENCRYPTED), content);
+            if (savePassword(passwordMap, code)) return false;
         }
         return true;
     }
 
     public static Map<String, Password> getPasswords(String code) {
-        synchronized (lock) {
+        synchronized (DiaryDataImp.lock) {
             String content = FileUtil.readFile(HH.resourceFilePath(Constants.ENCRYPTED));
             byte[] decrypted;
             try {
                 decrypted = Privacy.decrypt(content, code.getBytes());
             } catch (Exception e) {
                 log.error("Code is wrong", e);
-                return new HashMap<>();
+                return null;
             }
             ObjectMapper mapper = new ObjectMapper();
             JavaType type = mapper.getTypeFactory()
@@ -114,9 +97,9 @@ public class PasswordDataImp implements PasswordData {
         }
     }
 
-    private static void moveToBackup(String filePath) {
-        synchronized (lock) {
-            File file = new File(HH.resourceFilePath(filePath));
+    private static void moveToBackup() {
+        synchronized (DiaryDataImp.lock) {
+            File file = new File(HH.resourceFilePath(Constants.ENCRYPTED));
             String path = file.getParent();
             String backFileName =
                     file.getName() + new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis());

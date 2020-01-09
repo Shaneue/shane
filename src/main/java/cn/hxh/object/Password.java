@@ -2,10 +2,16 @@ package cn.hxh.object;
 
 import cn.hxh.util.HH;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@Setter
+@Getter
 public class Password implements Comparable<Password> {
     @JsonProperty
     private byte[] where;
@@ -16,13 +22,6 @@ public class Password implements Comparable<Password> {
     @JsonProperty
     private List<Pair> ext;
 
-    public void setAccount(byte[] account) {
-        this.account = account;
-    }
-
-    public void setPassword(byte[] password) {
-        this.password = password;
-    }
 
     public void addPair(String key, String value) {
         if (this.ext == null) {
@@ -31,13 +30,6 @@ public class Password implements Comparable<Password> {
         this.ext.add(new Pair(key.getBytes(), value.getBytes()));
     }
 
-    public void setWhere(byte[] where) {
-        this.where = where;
-    }
-
-    public byte[] getWhere() {
-        return where;
-    }
 
     public void clean() {
         HH.eraseArray(account);
@@ -48,6 +40,14 @@ public class Password implements Comparable<Password> {
                 pair.clean();
             }
         }
+    }
+
+    public List<Map> convertExt() {
+        List<Map> list = new ArrayList<>();
+        for (Pair pair : ext) {
+            list.add(pair.getMap());
+        }
+        return list;
     }
 
     @Override
@@ -84,6 +84,13 @@ public class Password implements Comparable<Password> {
         void clean() {
             HH.eraseArray(key);
             HH.eraseArray(value);
+        }
+
+        public Map<String, String> getMap() {
+            Map<String, String> map = new HashMap<>();
+            map.put("key", new String(key));
+            map.put("value", new String(value));
+            return map;
         }
 
         @Override

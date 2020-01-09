@@ -1,66 +1,61 @@
-package cn.hxh.controller.diary;
+package cn.hxh.controller;
 
+import cn.hxh.common.Constants;
+import cn.hxh.common.Response;
 import cn.hxh.common.log.Log;
 import cn.hxh.object.Diary;
 import cn.hxh.storage.interfaces.DiaryData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
-import java.util.List;
 
-@Controller
+@RestController
 public class DiaryService {
-    @Autowired
-    DiaryData diaryData;
-    @Autowired
-    Log myLog;
+    private final DiaryData diaryData;
+    private final Log myLog;
 
-    @RequestMapping(value = "/diary", method = RequestMethod.GET)
-    public String dairy() {
-        return "calendar";
+    @Autowired
+    public DiaryService(DiaryData diaryData, Log myLog) {
+        this.diaryData = diaryData;
+        this.myLog = myLog;
     }
 
     @ResponseBody
     @GetMapping(value = "/diary/{year}/{month}/{date}")
-    public ResponseDiary get(@PathVariable("year") int year,
-                             @PathVariable("month") int month,
-                             @PathVariable("date") int date) {
+    public Response get(@PathVariable("year") int year,
+                        @PathVariable("month") int month,
+                        @PathVariable("date") int date) {
         Diary diary = diaryData.query(new Diary.Key(year, month, date));
         if (diary == null) {
             myLog.record(String.format("Query diary unsuccessfully-> %s-%s-%s", year, month, date));
-            return new ResponseDiary(-1, null);
+            return new Response(-1, Constants.FAILURE, null);
         } else {
             myLog.record(String.format("Query diary successfully-> %s-%s-%s", year, month, date));
-            return new ResponseDiary(0, diary);
+            return new Response(diary);
         }
     }
 
     @ResponseBody
     @GetMapping(value = "/diary/{year}/{month}")
     @Validated
-    public List<Integer> get(@PathVariable("year") int year,
-                               @PathVariable("month") int month) {
+    public Response get(@PathVariable("year") int year,
+                        @PathVariable("month") int month) {
         myLog.record(String.format("Query diary list successfully-> %s-%s", year, month));
-        return diaryData.query(year, month);
+        return new Response(diaryData.query(year, month));
     }
 
     @ResponseBody
     @DeleteMapping(value = "/diary/{year}/{month}/{date}")
-    public Code delete(@PathVariable("year") int year,
-                       @PathVariable("month") int month,
-                       @PathVariable("date") int date) {
-        Code re = new Code();
+    public Response delete(@PathVariable("year") int year,
+                           @PathVariable("month") int month,
+                           @PathVariable("date") int date) {
+        Response re = new Response();
         if (diaryData.delete(new Diary.Key(year, month, date))) {
-            re.setCode(0);
             myLog.record(String.format("Delete diary successfully-> %s-%s-%s", year, month, date));
         } else {
-            re.setCode(1);
+            re.setFailure();
             myLog.record(String.format("Delete diary unsuccessfully-> %s-%s-%s", year, month, date));
         }
         return re;
@@ -68,13 +63,12 @@ public class DiaryService {
 
     @ResponseBody
     @PostMapping(value = "/diary")
-    public Code create(@RequestBody @Valid Diary diary) {
-        Code re = new Code();
+    public Response create(@RequestBody @Valid Diary diary) {
+        Response re = new Response();
         if (diaryData.create(diary)) {
-            re.setCode(0);
             myLog.record(String.format("Create diary successfully-> %s", diary.getDate().toString()));
         } else {
-            re.setCode(1);
+            re.setFailure();
             myLog.record(String.format("Create diary unsuccessfully-> %s", diary.getDate().toString()));
         }
         return re;
@@ -83,13 +77,12 @@ public class DiaryService {
 
     @ResponseBody
     @PutMapping(value = "/diary")
-    public Code update(@RequestBody @Valid Diary diary) {
-        Code re = new Code();
+    public Response update(@RequestBody @Valid Diary diary) {
+        Response re = new Response();
         if (diaryData.update(diary)) {
-            re.setCode(0);
             myLog.record(String.format("Update diary successfully-> %s", diary.getDate().toString()));
         } else {
-            re.setCode(1);
+            re.setFailure();
             myLog.record(String.format("Update diary unsuccessfully-> %s", diary.getDate().toString()));
         }
         return re;

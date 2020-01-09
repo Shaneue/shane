@@ -1,4 +1,4 @@
-package cn.hxh.configure;
+package cn.hxh.common.configure;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

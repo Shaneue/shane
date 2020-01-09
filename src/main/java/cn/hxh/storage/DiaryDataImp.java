@@ -20,7 +20,7 @@ import java.util.Map;
 @Component
 public class DiaryDataImp implements DiaryData {
     private static final Logger log = LoggerFactory.getLogger(DiaryDataImp.class);
-    private static final Object lock = new Object();
+    static final Object lock = new Object();
 
     private final Map<Diary.Key, Diary> diaryMap = new HashMap<>();
 
@@ -62,9 +62,7 @@ public class DiaryDataImp implements DiaryData {
         synchronized (lock) {
             if (diaryMap.containsKey(diary.getDate())) return false;
             try {
-                String savePath = HH.resourceFilePath(Constants.DIARY) + File.separator + diary.getDate().toString();
-                mapper.writerWithDefaultPrettyPrinter().writeValue(new File(savePath), diary);
-                diaryMap.put(diary.getDate(), diary);
+                saveDiary(diary);
             } catch (IOException e) {
                 log.warn("Fail to create diary.", e);
                 return false;
@@ -78,9 +76,7 @@ public class DiaryDataImp implements DiaryData {
         synchronized (lock) {
             if (!diaryMap.containsKey(diary.getDate())) return false;
             try {
-                String savePath = HH.resourceFilePath(Constants.DIARY) + File.separator + diary.getDate().toString();
-                mapper.writerWithDefaultPrettyPrinter().writeValue(new File(savePath), diary);
-                diaryMap.put(diary.getDate(), diary);
+                saveDiary(diary);
             } catch (IOException e) {
                 log.warn("Fail to update diary.", e);
                 return false;
@@ -88,6 +84,13 @@ public class DiaryDataImp implements DiaryData {
         }
         return true;
     }
+
+    private void saveDiary(Diary diary) throws IOException {
+        String savePath = HH.resourceFilePath(Constants.DIARY) + File.separator + diary.getDate().toString();
+        mapper.writerWithDefaultPrettyPrinter().writeValue(new File(savePath), diary);
+        diaryMap.put(diary.getDate(), diary);
+    }
+
 
     @Override
     public Diary query(Diary.Key date) {
@@ -115,7 +118,9 @@ public class DiaryDataImp implements DiaryData {
         String path = HH.resourceFilePath(Constants.DIARY);
         File diaryDir = new File(path);
         if (!diaryDir.exists()) {
-            diaryDir.mkdirs();
+            if (!diaryDir.mkdirs()) {
+                log.error("Failed to mkdir");
+            }
         }
         return diaryDir;
     }

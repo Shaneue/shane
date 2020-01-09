@@ -1,4 +1,4 @@
-package cn.hxh.configure;
+package cn.hxh.common.configure;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ApplicationObjectSupport;

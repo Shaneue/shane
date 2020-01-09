@@ -2,6 +2,8 @@ package cn.hxh.object;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.Valid;
@@ -11,6 +13,8 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 
+@Getter
+@Setter
 public class Diary {
     @JsonProperty
     @Valid
@@ -25,17 +29,6 @@ public class Diary {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     String extend;
 
-    public Key getDate() {
-        return date;
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
-
-    public String getExtend() {
-        return extend;
-    }
 
     public static Diary empty() {
         Diary diary = new Diary();
@@ -58,6 +51,8 @@ public class Diary {
         String content;
     }
 
+    @Getter
+    @Setter
     public static class Key {
         @JsonProperty
         @Min(2018)
@@ -82,17 +77,6 @@ public class Diary {
             this.date = date;
         }
 
-        public int getYear() {
-            return year;
-        }
-
-        public int getMonth() {
-            return month;
-        }
-
-        public int getDate() {
-            return date;
-        }
 
         @Override
         public String toString() {

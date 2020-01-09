@@ -16,7 +16,6 @@ import java.util.Map;
 
 @Component
 public class MemoDataImp implements MemoData {
-    private static final Object lock = new Object();
     private static final Logger log = LoggerFactory.getLogger(MemoDataImp.class);
     private static final String DIR_NAME = "memos";
 
@@ -25,7 +24,7 @@ public class MemoDataImp implements MemoData {
 
     @PostConstruct
     public void init() {
-        synchronized (lock) {
+        synchronized (DiaryDataImp.lock) {
             File dir = new File(HH.resourceFilePath(DIR_NAME));
             File[] memoText = dir.listFiles();
             if (memoText == null || memoText.length == 0) {
@@ -44,7 +43,7 @@ public class MemoDataImp implements MemoData {
 
     @Override
     public String query(String id) {
-        synchronized (lock) {
+        synchronized (DiaryDataImp.lock) {
             try {
                 Memo memo = mapper.readValue(new File(memoPath(id)), Memo.class);
                 return memo.getContent();
@@ -57,7 +56,7 @@ public class MemoDataImp implements MemoData {
 
     @Override
     public boolean create(String topic) {
-        synchronized (lock) {
+        synchronized (DiaryDataImp.lock) {
             if (memos.containsKey(topic)) return false;
             try {
                 String fileName = Long.toString(System.currentTimeMillis());
@@ -74,7 +73,7 @@ public class MemoDataImp implements MemoData {
 
     @Override
     public boolean delete(String topic) {
-        synchronized (lock) {
+        synchronized (DiaryDataImp.lock) {
             if (!memos.containsKey(topic)) return false;
             String path = memoPath(memos.get(topic));
             if (!new File(path).delete()) return false;
@@ -85,7 +84,7 @@ public class MemoDataImp implements MemoData {
 
     @Override
     public boolean update(String fileName, String topic, String content) {
-        synchronized (lock) {
+        synchronized (DiaryDataImp.lock) {
             if (!memos.containsKey(topic)) return false;
             try {
                 mapper.writerWithDefaultPrettyPrinter()
@@ -101,7 +100,7 @@ public class MemoDataImp implements MemoData {
 
     @Override
     public Map<String, String> queryMemos() {
-        synchronized (lock) {
+        synchronized (DiaryDataImp.lock) {
             return memos;
         }
     }
