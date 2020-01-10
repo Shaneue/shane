@@ -15,13 +15,13 @@ public class Response {
     Object data;
 
     public Response() {
-        this.status = 0;
+        this.status = Constants.SUCCESS_STATUS;
         this.message = Constants.SUCCESS;
         this.data = null;
     }
 
     public Response(Object data) {
-        this.status = 0;
+        this.status = Constants.SUCCESS_STATUS;
         this.message = Constants.SUCCESS;
         this.data = data;
     }
@@ -33,7 +33,11 @@ public class Response {
     }
 
     public void setFailure() {
-        this.status = -1;
+        this.status = Constants.FAILURE_STATUS;
         this.message = Constants.FAILURE;
+    }
+
+    public static Response failure(Object data) {
+        return new Response(Constants.FAILURE_STATUS, Constants.FAILURE, data);
     }
 }

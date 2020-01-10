@@ -2,12 +2,12 @@ package cn.hxh.controller;
 
 import cn.hxh.common.Constants;
 import cn.hxh.common.Response;
-import cn.hxh.common.log.Log;
 import cn.hxh.object.Password;
 import cn.hxh.storage.PasswordDataImp;
 import cn.hxh.storage.interfaces.PasswordData;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,31 +18,30 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Slf4j
 public class PasswordService {
 
     private final PasswordData passwordData;
-    private final Log log;
 
     @Autowired
-    public PasswordService(PasswordData passwordData, Log log) {
+    public PasswordService(PasswordData passwordData) {
         this.passwordData = passwordData;
-        this.log = log;
     }
 
     @PostMapping(value = "passwords")
-    public Response query(@RequestBody @Valid Code code) {
+    public Response queryAll(@RequestBody @Valid Code code) {
         Map<String, Map> passwords = getPasswordMap(code.getCode());
         if (passwords == null) {
-            return new Response(-1, Constants.FAILURE_CODE, null);
+            return new Response(Constants.FAILURE_STATUS, Constants.FAILURE_CODE, null);
         }
         return new Response(passwords);
     }
 
     @PostMapping(value = "password/{id}")
-    public Response delete(@RequestBody @Valid Code code, @PathVariable @NotBlank String id) {
+    public Response deletePassword(@RequestBody @Valid Code code, @PathVariable @NotBlank String id) {
         Response re = new Response();
         if (passwordData.delete(id, code.getCode())) {
-            log.record(String.format("Deleted password %s", id));
+            log.info(String.format("Deleted password %s", id));
         } else {
             re.setFailure();
         }
@@ -50,11 +49,11 @@ public class PasswordService {
     }
 
     @PostMapping(value = "password")
-    public Response create(@RequestBody @Valid CreateRequest body) {
+    public Response createPassword(@RequestBody @Valid CreateRequest body) {
         Password password = convertRequestToPassword(body);
         Response re = new Response();
         if (passwordData.create(password, body.getCode())) {
-            log.record(String.format("Created password %s", body.getWhere()));
+            log.info(String.format("Created password %s", body.getWhere()));
         } else {
             re.setFailure();
         }
@@ -62,11 +61,11 @@ public class PasswordService {
     }
 
     @PutMapping(value = "password")
-    public Response update(@RequestBody @Valid UpdateRequest body) {
+    public Response updatePassword(@RequestBody @Valid UpdateRequest body) {
         Password password = convertRequestToPassword(body);
         Response re = new Response();
         if (passwordData.update(body.getId(), password, body.getCode())) {
-            log.record(String.format("Updated password %s", body.getWhere()));
+            log.info(String.format("Updated password %s", body.getWhere()));
         } else {
             re.setFailure();
         }
