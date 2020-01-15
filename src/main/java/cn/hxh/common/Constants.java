@@ -1,18 +1,35 @@
 package cn.hxh.common;
 
-import cn.hxh.common.configure.AppContextAware;
-import cn.hxh.common.configure.NameConfig;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class Constants {
-    public static final String ENCRYPTED = nameConfig().passwordDir;
-    public static final String USER_NAME = nameConfig().userName;
-    public static final String DIARY = nameConfig().diary;
-    public static final String TEMPORARY = USER_NAME + "_tmp";
 
-    private static NameConfig nameConfig() {
-        return (NameConfig) AppContextAware.getBean(NameConfig.class);
+    public static String ENCRYPTED;
+    public static String USER_NAME;
+    public static String DIARY;
+    public static String TEMPORARY;
+
+    @Value("${file.passwords}")
+    public void setEncrypted(String encrypted) {
+        Constants.ENCRYPTED = encrypted;
     }
 
+    @Value("${owner.name}")
+    public void setUserName(String userName) {
+        USER_NAME = userName;
+    }
+
+    @Value("${file.diary}")
+    public void setDiary(String diary) {
+        Constants.DIARY = diary;
+    }
+
+    @Value("${file.tmp}")
+    public void setTemporary(String temporary) {
+        Constants.TEMPORARY = temporary;
+    }
 
     public static final String SUCCESS = "SUCCESS";
     public static final String FAILURE = "FAILURE";

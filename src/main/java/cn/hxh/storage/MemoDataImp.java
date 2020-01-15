@@ -1,11 +1,13 @@
 package cn.hxh.storage;
 
+import cn.hxh.common.Constants;
 import cn.hxh.object.Memo;
 import cn.hxh.storage.interfaces.MemoData;
 import cn.hxh.util.HH;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -20,6 +22,8 @@ public class MemoDataImp implements MemoData {
 
     private ObjectMapper mapper = new ObjectMapper();
     private List<Map<String, String>> memos = new ArrayList<>();
+    @Autowired
+    Constants constants;
 
     @PostConstruct
     public void init() {

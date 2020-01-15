@@ -22,7 +22,6 @@ import java.io.File;
 public class App {
     public static void main(String[] args) throws Exception {
         SpringApplication.run(App.class, args);
-        init();
     }
 
     @Value("${server.port}")
@@ -52,15 +51,5 @@ public class App {
         connector.setSecure(false);
         connector.setRedirectPort(port);
         return connector;
-    }
-
-    private static void init() throws Exception {
-        JarIOUtil.copyToShane(Constants.ENCRYPTED);
-        File backup = new File(HH.resourceFilePath("backup") + File.separator);
-        if (!backup.exists()) {
-            if (!backup.mkdirs()) {
-                System.out.println("Failed to mkdir");
-            }
-        }
     }
 }

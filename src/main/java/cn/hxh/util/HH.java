@@ -34,6 +34,16 @@ public class HH {
         return resourceDir() + filePath;
     }
 
+    public static String backupDir() {
+        File backup = new File(HH.resourceFilePath("backup") + File.separator);
+        if (!backup.exists()) {
+            if (!backup.mkdirs()) {
+                System.out.println("Failed to mkdir");
+            }
+        }
+        return HH.resourceFilePath("backup") + File.separator;
+    }
+
     public static String resourceDir() {
         String path = homeDir() + File.separator + Constants.USER_NAME + File.separator;
         File file = new File(path);

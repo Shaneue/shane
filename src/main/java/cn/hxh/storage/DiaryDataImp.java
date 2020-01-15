@@ -7,6 +7,7 @@ import cn.hxh.util.HH;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -25,6 +26,8 @@ public class DiaryDataImp implements DiaryData {
     private final Map<Diary.Key, Diary> diaryMap = new HashMap<>();
 
     private ObjectMapper mapper = new ObjectMapper();
+    @Autowired
+    Constants constants;
 
     @PostConstruct
     public void init() {

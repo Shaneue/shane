@@ -23,7 +23,7 @@ public class JarIOUtil {
         Resource resource = new ClassPathResource(filePath);
         InputStream is = resource.getInputStream();
         FileOutputStream fos = new FileOutputStream(file);
-
+        writeOutputFromInput(fos, is);
     }
 
     public static void writeOutputFromInput(FileOutputStream fos, InputStream is) throws IOException {
