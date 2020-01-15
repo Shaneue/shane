@@ -5,6 +5,7 @@ import cn.hxh.common.Response;
 import cn.hxh.object.Password;
 import cn.hxh.storage.PasswordDataImp;
 import cn.hxh.storage.interfaces.PasswordData;
+import cn.hxh.util.HH;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,7 @@ public class PasswordService {
 
     @PostMapping(value = "passwords")
     public Response queryAll(@RequestBody @Valid Code code) {
-        Map<String, Map> passwords = getPasswordMap(code.getCode());
+        List<Object> passwords = getPasswordMap(code.getCode());
         if (passwords == null) {
             return new Response(Constants.FAILURE_STATUS, Constants.FAILURE_CODE, null);
         }
@@ -49,9 +51,9 @@ public class PasswordService {
     }
 
     @PostMapping(value = "password")
-    public Response createPassword(@RequestBody @Valid CreateRequest body) {
-        Password password = convertRequestToPassword(body);
-        Response re = new Response();
+        public Response createPassword(@RequestBody @Valid CreateRequest body) {
+            Password password = convertRequestToPassword(body);
+            Response re = new Response();
         if (passwordData.create(password, body.getCode())) {
             log.info(String.format("Created password %s", body.getWhere()));
         } else {
@@ -77,6 +79,7 @@ public class PasswordService {
         password.setWhere(body.getWhere().getBytes());
         password.setAccount(body.getAccount().getBytes());
         password.setPassword(body.getPassword().getBytes());
+        password.setTime(HH.timeNow());
         if (body.getExt() != null)
             for (CreateRequest.Pair pair : body.getExt()) {
                 password.addPair(pair.key, pair.value);
@@ -84,22 +87,26 @@ public class PasswordService {
         return password;
     }
 
-    private static Map<String, Map> getPasswordMap(String code) {
+    private static List<Object> getPasswordMap(String code) {
         Map<String, Password> passwords = PasswordDataImp.getPasswords(code);
         if (passwords == null) {
             return null;
         }
-        Map<String, Map> map = new HashMap<>();
+        List<Object> list = new ArrayList<>();
         for (Map.Entry<String, Password> entry : passwords.entrySet()) {
             Map<String, Object> p = new HashMap<>();
+            p.put("k", entry.getKey());
             p.put("w", new String(entry.getValue().getWhere()));
             p.put("a", new String(entry.getValue().getAccount()));
             p.put("p", new String(entry.getValue().getPassword()));
+            p.put("t", entry.getValue().getTime());
             if (entry.getValue().getExt() != null)
                 p.put("e", entry.getValue().convertExt());
-            map.put(entry.getKey(), p);
+            list.add(p);
         }
-        return map;
+        list.sort((a, b) -> (((((Map) b).get("t")) == null ? "" : (String) ((Map) b).get("t"))).compareTo(
+                ((((Map) a).get("t")) == null ? "" : (String) ((Map) a).get("t"))));
+        return list;
     }
 
     @Getter

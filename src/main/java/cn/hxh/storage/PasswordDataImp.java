@@ -80,7 +80,7 @@ public class PasswordDataImp implements PasswordData {
             try {
                 decrypted = Privacy.decrypt(content, code.getBytes());
             } catch (Exception e) {
-                log.error("Code is wrong", e);
+                log.error("Code is wrong");
                 return null;
             }
             ObjectMapper mapper = new ObjectMapper();

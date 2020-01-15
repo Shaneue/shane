@@ -11,8 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class MemoDataImp implements MemoData {
@@ -20,7 +19,7 @@ public class MemoDataImp implements MemoData {
     private static final String DIR_NAME = "memos";
 
     private ObjectMapper mapper = new ObjectMapper();
-    private Map<String, String> memos = new HashMap<>();
+    private List<Map<String, String>> memos = new ArrayList<>();
 
     @PostConstruct
     public void init() {
@@ -33,7 +32,12 @@ public class MemoDataImp implements MemoData {
             }
             for (File f : memoText) {
                 try {
-                    memos.put(getTopicOfMemo(f), f.getName());
+                    Memo memo = getMemo(f);
+                    Map<String, String> tmp = new HashMap<>();
+                    tmp.put("topic", memo.getTopic());
+                    tmp.put("time", memo.getTime());
+                    tmp.put("k", f.getName());
+                    memos.add(tmp);
                 } catch (IOException e) {
                     log.warn("Fail to get memo.", e);
                 }
@@ -57,12 +61,18 @@ public class MemoDataImp implements MemoData {
     @Override
     public boolean create(String topic) {
         synchronized (DiaryDataImp.lock) {
-            if (memos.containsKey(topic)) return false;
+            for (Map<String, String> map : memos) {
+                if (map.get("topic").equals(topic)) return false;
+            }
             try {
                 String fileName = Long.toString(System.currentTimeMillis());
                 mapper.writerWithDefaultPrettyPrinter()
                         .writeValue(new File(memoPath(fileName)), new Memo(topic, ""));
-                memos.put(topic, fileName);
+                Map<String, String> tmp = new HashMap<>();
+                tmp.put("topic", topic);
+                tmp.put("time", HH.timeNow());
+                tmp.put("k", fileName);
+                memos.add(tmp);
             } catch (IOException e) {
                 log.warn("Fail to update memo.", e);
                 return false;
@@ -74,21 +84,31 @@ public class MemoDataImp implements MemoData {
     @Override
     public boolean delete(String topic) {
         synchronized (DiaryDataImp.lock) {
-            if (!memos.containsKey(topic)) return false;
-            String path = memoPath(memos.get(topic));
+            Map<String, String> tmp = getMemoMap(topic);
+            if (tmp == null) return false;
+            String path = memoPath(tmp.get("k"));
             if (!new File(path).delete()) return false;
-            memos.remove(topic);
-            return true;
+            Iterator<Map<String, String>> iterator = memos.iterator();
+            while (iterator.hasNext()) {
+                if (topic.equals(iterator.next().get("topic"))) {
+                    iterator.remove();
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
     @Override
     public boolean update(String fileName, String topic, String content) {
         synchronized (DiaryDataImp.lock) {
-            if (!memos.containsKey(topic)) return false;
+            Map<String, String> tmp = getMemoMap(topic);
+            if (tmp == null) return false;
             try {
                 mapper.writerWithDefaultPrettyPrinter()
                         .writeValue(new File(memoPath(fileName)), new Memo(topic, content));
+                memos.clear();
+                this.init();
             } catch (IOException e) {
                 log.warn("Fail to update memo.", e);
                 return false;
@@ -97,17 +117,24 @@ public class MemoDataImp implements MemoData {
         }
     }
 
+    private Map<String, String> getMemoMap(String topic) {
+        Map<String, String> tmp = null;
+        for (Map<String, String> map : memos) {
+            if (map.get("topic").equals(topic)) tmp = map;
+        }
+        return tmp;
+    }
+
 
     @Override
-    public Map<String, String> queryMemos() {
+    public List<Map<String, String>> queryMemos() {
         synchronized (DiaryDataImp.lock) {
             return memos;
         }
     }
 
-    private String getTopicOfMemo(File memoFile) throws IOException {
-        Memo memo = mapper.readValue(memoFile, Memo.class);
-        return memo.getTopic();
+    private Memo getMemo(File memoFile) throws IOException {
+        return mapper.readValue(memoFile, Memo.class);
     }
 
     private String memoPath(String memoFileName) {

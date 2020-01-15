@@ -3,6 +3,7 @@ package cn.hxh.util;
 import cn.hxh.common.Constants;
 
 import java.io.File;
+import java.time.LocalDateTime;
 
 public class HH {
     private HH() {
@@ -49,6 +50,10 @@ public class HH {
             file.mkdirs();
         }
         return path;
+    }
+
+    public static String timeNow() {
+        return LocalDateTime.now().withNano(0).toString();
     }
 
 }

@@ -1,11 +1,12 @@
 package cn.hxh.storage.interfaces;
 
+import java.util.List;
 import java.util.Map;
 
 public interface MemoData {
     String query(String note);
 
-    Map<String, String> queryMemos();
+    List<Map<String, String>> queryMemos();
 
     boolean create(String topic);
 

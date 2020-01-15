@@ -21,6 +21,8 @@ public class Password implements Comparable<Password> {
     private byte[] password;
     @JsonProperty
     private List<Pair> ext;
+    @JsonProperty
+    private String time;
 
 
     public void addPair(String key, String value) {

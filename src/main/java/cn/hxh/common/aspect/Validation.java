@@ -29,7 +29,7 @@ public class Validation {
             String[] allow = valid.allow();
             List<String> allows = Arrays.asList(allow);
             if (!allows.contains(format.toLowerCase())) {
-                return Response.failure("Format is not allowed");
+                return Response.failure(String.format("Format %s is not allowed", format));
             }
 
             long size = valid.max();
@@ -37,7 +37,7 @@ public class Validation {
                 size = size * 1024 * 1024;
                 long fileSize = zipFile.getSize();
                 if (fileSize > size) {
-                    return Response.failure("File is too large");
+                    return Response.failure(String.format("File is too large. Max: %s MB", size));
                 }
             }
         }
