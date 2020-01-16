@@ -51,9 +51,9 @@ public class PasswordService {
     }
 
     @PostMapping(value = "password")
-        public Response createPassword(@RequestBody @Valid CreateRequest body) {
-            Password password = convertRequestToPassword(body);
-            Response re = new Response();
+    public Response createPassword(@RequestBody @Valid CreateRequest body) {
+        Password password = convertRequestToPassword(body);
+        Response re = new Response();
         if (passwordData.create(password, body.getCode())) {
             log.info(String.format("Created password %s", body.getWhere()));
         } else {
@@ -72,6 +72,11 @@ public class PasswordService {
             re.setFailure();
         }
         return re;
+    }
+
+    @PostMapping(value = "codeModify")
+    public Response modifyCode(@RequestBody @Valid CodeModify body) {
+        return passwordData.changeCode(body.oldCode, body.newCode);
     }
 
     private Password convertRequestToPassword(CreateRequest body) {
@@ -139,6 +144,17 @@ public class PasswordService {
         @JsonProperty
         @NotBlank
         String id;
+    }
+
+    @Getter
+    static class CodeModify {
+        @JsonProperty
+        @NotBlank
+        String oldCode;
+
+        @JsonProperty
+        @NotBlank
+        String newCode;
     }
 
     @Getter

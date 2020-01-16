@@ -28,7 +28,7 @@ public class MemoDataImp implements MemoData {
     @PostConstruct
     public void init() {
         synchronized (DiaryDataImp.lock) {
-            File dir = new File(HH.resourceFilePath(DIR_NAME));
+            File dir = memoFile();
             File[] memoText = dir.listFiles();
             if (memoText == null || memoText.length == 0) {
                 log.info("No memos.");
@@ -143,5 +143,17 @@ public class MemoDataImp implements MemoData {
 
     private String memoPath(String memoFileName) {
         return HH.resourceFilePath(DIR_NAME) + '/' + memoFileName;
+    }
+
+
+    private File memoFile() {
+        String path = HH.resourceFilePath(DIR_NAME);
+        File memoDir = new File(path);
+        if (!memoDir.exists()) {
+            if (!memoDir.mkdirs()) {
+                log.error("Failed to make " + DIR_NAME);
+            }
+        }
+        return memoDir;
     }
 }

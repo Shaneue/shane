@@ -1,6 +1,7 @@
 package cn.hxh.storage;
 
 import cn.hxh.common.Constants;
+import cn.hxh.common.Response;
 import cn.hxh.object.Password;
 import cn.hxh.storage.interfaces.PasswordData;
 import cn.hxh.util.HH;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +51,7 @@ public class PasswordDataImp implements PasswordData {
             log.warn("Fail to encrypt new password");
             return true;
         }
-        FileUtil.writeOut(HH.resourceFilePath(Constants.ENCRYPTED), content);
+        FileUtil.writeOut(getEncryptedFile().getPath(), content);
         return false;
     }
 
@@ -76,9 +79,21 @@ public class PasswordDataImp implements PasswordData {
         return true;
     }
 
+    @Override
+    public Response changeCode(String oldCode, String newCode) {
+        synchronized (DiaryDataImp.lock) {
+            Map<String, Password> passwords = getPasswords(oldCode);
+            if (passwords == null) {
+                return new Response(Constants.FAILURE_STATUS, Constants.FAILURE_CODE, null);
+            }
+            if (savePassword(passwords, newCode)) return new Response(Constants.FAILURE_STATUS, Constants.FAIL_SAVE, null);
+            return new Response();
+        }
+    }
+
     public static Map<String, Password> getPasswords(String code) {
         synchronized (DiaryDataImp.lock) {
-            String content = FileUtil.readFile(HH.resourceFilePath(Constants.ENCRYPTED));
+            String content = FileUtil.readFile(getEncryptedFile().getPath());
             byte[] decrypted;
             try {
                 decrypted = Privacy.decrypt(content, code.getBytes());
@@ -102,13 +117,33 @@ public class PasswordDataImp implements PasswordData {
 
     private static void moveToBackup() {
         synchronized (DiaryDataImp.lock) {
-            File file = new File(HH.resourceFilePath(Constants.ENCRYPTED));
+            File file = getEncryptedFile();
             String backFileName =
                     file.getName() + new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis());
             String backPath = HH.backupDir() + backFileName;
             File backFile = new File(backPath);
-            boolean flag = file.renameTo(backFile);
-            log.info("Back up file : {} -> {}", backFile.getName(), flag);
+            try {
+                Files.copy(file.toPath(), backFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+            }
+            log.info("Back up file : {}", backFile.getName());
         }
+    }
+
+    private static File getEncryptedFile() {
+        File file = new File(HH.resourceFilePath(Constants.ENCRYPTED));
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+                String content;
+                content = Privacy.encrypt("{}".getBytes(), Constants.CODE_INIT.getBytes());
+                FileUtil.writeOut(HH.resourceFilePath(Constants.ENCRYPTED), content);
+                log.info("File of encrypted has been initialized");
+            } catch (Exception e) {
+                log.warn("Fail to encrypt this file", e);
+            }
+        }
+        return file;
     }
 }
