@@ -24,8 +24,8 @@ public class DiaryService {
     @ResponseBody
     @GetMapping(value = "/diary/{year}/{month}/{date}")
     public Response getDate(@PathVariable("year") int year,
-                        @PathVariable("month") int month,
-                        @PathVariable("date") int date) {
+                            @PathVariable("month") int month,
+                            @PathVariable("date") int date) {
         Diary diary = diaryData.query(new Diary.Key(year, month, date));
         if (diary == null) {
             log.info(String.format("Query diary unsuccessfully-> %s-%s-%s", year, month, date));
@@ -40,16 +40,23 @@ public class DiaryService {
     @GetMapping(value = "/diary/{year}/{month}")
     @Validated
     public Response getMonth(@PathVariable("year") int year,
-                        @PathVariable("month") int month) {
+                             @PathVariable("month") int month) {
         log.info(String.format("Query diary list successfully-> %s-%s", year, month));
         return new Response(diaryData.query(year, month));
     }
 
     @ResponseBody
+    @GetMapping(value = "/diary")
+    public Response getAll() {
+        log.info("Query diaries successfully");
+        return new Response(diaryData.queryAll());
+    }
+
+    @ResponseBody
     @DeleteMapping(value = "/diary/{year}/{month}/{date}")
     public Response deleteDate(@PathVariable("year") int year,
-                           @PathVariable("month") int month,
-                           @PathVariable("date") int date) {
+                               @PathVariable("month") int month,
+                               @PathVariable("date") int date) {
         Response re = new Response();
         if (diaryData.delete(new Diary.Key(year, month, date))) {
             log.info(String.format("Delete diary successfully-> %s-%s-%s", year, month, date));

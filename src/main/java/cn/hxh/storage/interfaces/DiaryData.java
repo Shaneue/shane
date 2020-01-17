@@ -14,5 +14,7 @@ public interface DiaryData {
 
     Diary query(Diary.Key date);
 
-    List<Integer> query(int year, int month);
+    List<String> query(int year, int month);
+
+    List<String> queryAll();
 }

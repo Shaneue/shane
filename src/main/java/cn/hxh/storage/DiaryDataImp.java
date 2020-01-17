@@ -13,10 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class DiaryDataImp implements DiaryData {
@@ -104,15 +101,28 @@ public class DiaryDataImp implements DiaryData {
     }
 
     @Override
-    public List<Integer> query(int year, int month) {
+    public List<String> query(int year, int month) {
         synchronized (lock) {
-            List<Integer> keys = new ArrayList<>();
+            List<String> keys = new ArrayList<>();
             for (Map.Entry entry : diaryMap.entrySet()) {
                 Diary.Key key = (Diary.Key) entry.getKey();
                 if (key.getYear() == year && key.getMonth() == month) {
-                    keys.add(key.getDate());
+                    keys.add(String.format("%04d-%02d-%02d", key.getYear(), key.getMonth(), key.getDate()));
                 }
             }
+            return keys;
+        }
+    }
+
+    @Override
+    public List<String> queryAll() {
+        synchronized (lock) {
+            List<String> keys = new ArrayList<>();
+            for (Map.Entry entry : diaryMap.entrySet()) {
+                Diary.Key key = (Diary.Key) entry.getKey();
+                keys.add(String.format("%04d-%02d-%02d", key.getYear(), key.getMonth(), key.getDate()));
+            }
+            keys.sort(Comparator.reverseOrder());
             return keys;
         }
     }
