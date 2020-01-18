@@ -42,7 +42,7 @@ public class Response {
         this.message = message;
     }
 
-    public static Response failure(Object data) {
-        return new Response(Constants.FAILURE_STATUS, Constants.FAILURE, data);
+    public static Response failure(String message) {
+        return new Response(Constants.FAILURE_STATUS, message, null);
     }
 }

@@ -25,17 +25,12 @@ public class Diary {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     List<Item> items;
     @JsonProperty
-    @Length(min = 1, max = 1000)
+    @Length(max = 1000)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     String extend;
 
-
-    public static Diary empty() {
-        Diary diary = new Diary();
-        diary.extend = "no content on this day.";
-        return diary;
-    }
-
+    @Getter
+    @Setter
     static class Item {
         @JsonProperty
         @Min(0)

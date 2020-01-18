@@ -12,7 +12,7 @@ public class Security extends WebSecurityConfigurerAdapter {
     @Value("${security.csrf}")
     private boolean csrfEnabled;
 
-    private String[] permit = new String[]{"/**"};
+    private String[] permit = new String[]{};
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

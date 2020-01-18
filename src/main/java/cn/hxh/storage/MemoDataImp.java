@@ -50,6 +50,12 @@ public class MemoDataImp implements MemoData {
     }
 
     @Override
+    public void cleanAndInit() {
+        memos.clear();
+        init();
+    }
+
+    @Override
     public String query(String id) {
         synchronized (DiaryDataImp.lock) {
             try {

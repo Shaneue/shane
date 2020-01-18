@@ -17,4 +17,6 @@ public interface DiaryData {
     List<String> query(int year, int month);
 
     List<String> queryAll();
+
+    void cleanAndInit();
 }

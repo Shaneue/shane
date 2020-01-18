@@ -18,7 +18,7 @@ import java.util.*;
 @Component
 public class DiaryDataImp implements DiaryData {
     private static final Logger log = LoggerFactory.getLogger(DiaryDataImp.class);
-    static final Object lock = new Object();
+    public static final Object lock = new Object();
 
     private final Map<Diary.Key, Diary> diaryMap = new HashMap<>();
 
@@ -46,6 +46,11 @@ public class DiaryDataImp implements DiaryData {
         }
     }
 
+    public void cleanAndInit() {
+        diaryMap.clear();
+        init();
+    }
+
     @Override
     public boolean delete(Diary.Key date) {
         synchronized (lock) {
@@ -60,7 +65,7 @@ public class DiaryDataImp implements DiaryData {
     @Override
     public boolean create(Diary diary) {
         synchronized (lock) {
-            if (diaryMap.containsKey(diary.getDate())) return false;
+            // if (diaryMap.containsKey(diary.getDate())) return false;
             try {
                 saveDiary(diary);
             } catch (IOException e) {

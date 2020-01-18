@@ -13,4 +13,6 @@ public interface MemoData {
     boolean delete(String topic);
 
     boolean update(String fileName, String topic, String content);
+
+    void cleanAndInit();
 }
