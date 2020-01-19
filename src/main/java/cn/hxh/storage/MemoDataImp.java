@@ -1,6 +1,7 @@
 package cn.hxh.storage;
 
 import cn.hxh.common.Constants;
+import cn.hxh.common.Response;
 import cn.hxh.object.Memo;
 import cn.hxh.storage.interfaces.MemoData;
 import cn.hxh.util.HH;
@@ -125,6 +126,24 @@ public class MemoDataImp implements MemoData {
             }
             return true;
         }
+    }
+
+    @Override public Response reName(String oldName, String newName) {
+        Map<String, String> tmp = getMemoMap(oldName);
+        if (tmp == null) return Response.failure("Old name does not exist.");
+        String fileName = tmp.get("k");
+        try {
+            Memo memo = mapper.readValue(new File(memoPath(fileName)), Memo.class);
+            memo.setTopic(newName);
+            mapper.writerWithDefaultPrettyPrinter()
+                    .writeValue(new File(memoPath(fileName)), memo);
+            memos.clear();
+            this.init();
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Response.failure(e.getMessage());
+        }
+        return new Response();
     }
 
     private Map<String, String> getMemoMap(String topic) {

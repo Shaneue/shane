@@ -3,8 +3,10 @@ package cn.hxh.object;
 import cn.hxh.util.HH;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class Memo {
     @JsonProperty
     String topic;

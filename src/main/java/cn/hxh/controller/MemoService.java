@@ -2,11 +2,15 @@ package cn.hxh.controller;
 
 import cn.hxh.common.Response;
 import cn.hxh.storage.interfaces.MemoData;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Map;
 
@@ -76,5 +80,22 @@ public class MemoService {
             re.setFailure();
         }
         return re;
+    }
+
+    @PostMapping(value = "/memo")
+    @ResponseBody
+    public Response nameModify(@RequestBody @Valid NameModify body) {
+        return memoData.reName(body.getOldName(), body.getNewName());
+    }
+
+    @Getter
+    static class NameModify {
+        @JsonProperty
+        @NotBlank
+        String oldName;
+
+        @JsonProperty
+        @NotBlank
+        String newName;
     }
 }
