@@ -1,9 +1,6 @@
 package cn.hxh.util.file;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -76,10 +73,20 @@ public class ZipUtil {
                     fileZipped.getParentFile().mkdirs();
                 }
                 FileOutputStream out = new FileOutputStream(fileZipped);
-                JarIOUtil.writeOutputFromInput(out, in);
+                writeOutputFromInput(out, in);
                 System.out.println(pathOfUpZipped);
             }
         }
         zip.close();
+    }
+
+    private static void writeOutputFromInput(FileOutputStream fos, InputStream is) throws IOException {
+        byte[] bytes = new byte[1024];
+        int length;
+        while ((length = is.read(bytes)) > 0) {
+            fos.write(bytes, 0, length);
+        }
+        is.close();
+        fos.close();
     }
 }
