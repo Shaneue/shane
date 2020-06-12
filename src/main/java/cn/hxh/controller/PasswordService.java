@@ -32,9 +32,12 @@ public class PasswordService {
 
     @PostMapping(value = "passwords")
     public Response queryAll(@RequestBody @Valid Code code) {
-        List<Object> passwords = getPasswordMap(code.getCode());
+        List<Map<String, Object>> passwords = getPasswordMap(code.getCode());
         if (passwords == null) {
             return new Response(Constants.FAILURE_STATUS, Constants.FAILURE_CODE, null);
+        }
+        if (code.search != null) {
+            passwords.removeIf(it -> !it.get("w").toString().contains(code.search));
         }
         return new Response(passwords);
     }
@@ -92,12 +95,12 @@ public class PasswordService {
         return password;
     }
 
-    private static List<Object> getPasswordMap(String code) {
+    private static List<Map<String, Object>> getPasswordMap(String code) {
         Map<String, Password> passwords = PasswordDataImp.getPasswords(code);
         if (passwords == null) {
             return null;
         }
-        List<Object> list = new ArrayList<>();
+        List<Map<String, Object>> list = new ArrayList<>();
         for (Map.Entry<String, Password> entry : passwords.entrySet()) {
             Map<String, Object> p = new HashMap<>();
             p.put("k", entry.getKey());
@@ -109,8 +112,8 @@ public class PasswordService {
                 p.put("e", entry.getValue().convertExt());
             list.add(p);
         }
-        list.sort((a, b) -> (((((Map) b).get("t")) == null ? "" : (String) ((Map) b).get("t"))).compareTo(
-                ((((Map) a).get("t")) == null ? "" : (String) ((Map) a).get("t"))));
+        list.sort((a, b) -> (((b.get("t")) == null ? "" : (String) b.get("t"))).compareTo(
+                ((a.get("t")) == null ? "" : (String) a.get("t"))));
         return list;
     }
 
@@ -162,5 +165,7 @@ public class PasswordService {
         @JsonProperty(value = "code")
         @NotBlank
         String code;
+        @JsonProperty(value = "search")
+        String search;
     }
 }
