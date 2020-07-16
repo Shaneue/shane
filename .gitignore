@@ -3,3 +3,4 @@ target/
 *.iml
 log/
 tomcat/
+*.DS_store
