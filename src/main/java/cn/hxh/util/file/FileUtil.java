@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 public class FileUtil {
@@ -16,7 +17,7 @@ public class FileUtil {
         BufferedWriter bw = null;
         try {
             try {
-                bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), "utf-8"));
+                bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8));
                 bw.write(content);
             } finally {
                 if (bw != null) {

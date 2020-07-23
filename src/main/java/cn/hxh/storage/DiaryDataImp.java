@@ -7,7 +7,6 @@ import cn.hxh.util.HH;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -23,8 +22,11 @@ public class DiaryDataImp implements DiaryData {
     private final Map<Diary.Key, Diary> diaryMap = new HashMap<>();
 
     private ObjectMapper mapper = new ObjectMapper();
-    @Autowired
-    Constants constants;
+    final Constants constants;
+
+    public DiaryDataImp(Constants constants) {
+        this.constants = constants;
+    }
 
     @PostConstruct
     public void init() {
@@ -109,12 +111,11 @@ public class DiaryDataImp implements DiaryData {
     public List<String> query(int year, int month) {
         synchronized (lock) {
             List<String> keys = new ArrayList<>();
-            for (Map.Entry entry : diaryMap.entrySet()) {
-                Diary.Key key = (Diary.Key) entry.getKey();
+            diaryMap.forEach((key, value) -> {
                 if (key.getYear() == year && key.getMonth() == month) {
                     keys.add(String.format("%04d-%02d-%02d", key.getYear(), key.getMonth(), key.getDate()));
                 }
-            }
+            });
             return keys;
         }
     }
@@ -123,10 +124,7 @@ public class DiaryDataImp implements DiaryData {
     public List<String> queryAll() {
         synchronized (lock) {
             List<String> keys = new ArrayList<>();
-            for (Map.Entry entry : diaryMap.entrySet()) {
-                Diary.Key key = (Diary.Key) entry.getKey();
-                keys.add(String.format("%04d-%02d-%02d", key.getYear(), key.getMonth(), key.getDate()));
-            }
+            diaryMap.forEach((key, value) -> keys.add(String.format("%04d-%02d-%02d", key.getYear(), key.getMonth(), key.getDate())));
             keys.sort(Comparator.reverseOrder());
             return keys;
         }

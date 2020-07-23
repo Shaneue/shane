@@ -37,11 +37,6 @@ public class Response {
         this.message = Constants.FAILURE;
     }
 
-    public void setFailure(String message) {
-        this.status = Constants.FAILURE_STATUS;
-        this.message = message;
-    }
-
     public static Response failure(String message) {
         return new Response(Constants.FAILURE_STATUS, message, null);
     }

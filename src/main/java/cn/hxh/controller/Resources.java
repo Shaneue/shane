@@ -9,7 +9,6 @@ import cn.hxh.util.HH;
 import cn.hxh.util.file.FileUtil;
 import cn.hxh.util.file.ZipUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +25,13 @@ import java.text.SimpleDateFormat;
 @RestController
 @Slf4j
 public class Resources {
-    @Autowired
-    MemoData memoData;
-    @Autowired
-    DiaryData diaryData;
+    final MemoData memoData;
+    final DiaryData diaryData;
+
+    public Resources(MemoData memoData, DiaryData diaryData) {
+        this.memoData = memoData;
+        this.diaryData = diaryData;
+    }
 
     @GetMapping("/resources")
     public ResponseEntity<FileSystemResource> getResourcesZip() {
